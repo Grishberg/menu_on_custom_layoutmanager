@@ -14,6 +14,10 @@ public class CustomLayoutManager extends RecyclerView.LayoutManager implements M
     private static final String TAG = "CLM";
     private int buttonsInRow = 3;
     private int maxButtons = 6;
+	private int scrollOffset;
+	private int topViewPosition;
+	private final LayoutDelegate delegate = new LayoutDelegate(this);
+	
 
     @Override
     public RecyclerView.LayoutParams generateDefaultLayoutParams() {
@@ -88,7 +92,8 @@ public class CustomLayoutManager extends RecyclerView.LayoutManager implements M
         int height = getHeight();
         int screenWidth = getWidth();
         int itemCount = getItemCount();
-        int viewTop = 0;
+        int viewTop = scrollOffset;
+		delegate.beforeLayout(scrollOffset, screenWidth, height);
 
         while (fillDown && pos < itemCount) {
             View child = recycler.getViewForPosition(pos);
@@ -106,6 +111,8 @@ public class CustomLayoutManager extends RecyclerView.LayoutManager implements M
             } else {
                 viewWidth = getDecoratedMeasuredWidth(child);
             }
+			
+			delegate.layoutChuld(child, viewWidth, viewHeight);
 
             layoutDecorated(child,
                     viewLeft,
@@ -126,6 +133,7 @@ public class CustomLayoutManager extends RecyclerView.LayoutManager implements M
                 // calculate item width and left offset
                 viewLeft = 0;
             }
+			// TODO: exit when thera are no visible items
             pos++;
         }
     }
@@ -151,18 +159,6 @@ public class CustomLayoutManager extends RecyclerView.LayoutManager implements M
         return lp.height;
     }
 
-    private int updateSpecWithExtra(int spec, int startInset, int endInset) {
-        if (startInset == 0 && endInset == 0) {
-            return spec;
-        }
-        final int mode = View.MeasureSpec.getMode(spec);
-        if (mode == View.MeasureSpec.AT_MOST || mode == View.MeasureSpec.EXACTLY) {
-            return View.MeasureSpec.makeMeasureSpec(
-                    View.MeasureSpec.getSize(spec) - startInset - endInset, mode);
-        }
-        return spec;
-    }
-
     @Override
     public boolean supportsPredictiveItemAnimations() {
         return true;
@@ -170,10 +166,67 @@ public class CustomLayoutManager extends RecyclerView.LayoutManager implements M
 
     @Override
     public int scrollVerticallyBy(int dy, RecyclerView.Recycler recycler, RecyclerView.State state) {
-        int delta = -dy;
-        offsetChildrenVertical(delta);
-        return -delta;
+        int delta = scrollVerticallyInternal(dy);
+        offsetChildrenVertical(-delta);
+        return delta;
     }
+	
+	private int scrollVerticallyInternal(int dy){
+		int childCount = getChildCount();
+		int itemCount = getItemCount();
+		
+		if (childCount == 0) {
+			return 0;
+		}
+		
+		final View topView = getChildAt(0);
+		final View bottomView = getChildAt(childCount - 1);
+		
+		if (areAllItemsPlacedOnScreen(topView, bottomView)) {
+			return 0;
+		}
+		int delta;
+		if (dy < 0) {
+			delta = calculateDeltaWhenScrollDown(dy, topView);
+		} else {
+			delta = calculateDeltaWhenScrollUp(dy, bottomView, itemCount);
+		}
+		scrollOffset -= delta;
+		return delta;
+	}
+	
+	private boolean areAllItemsPlacedOnScreen(View topView, View bottomView) {
+		int viewSpan = getDecoratedBottom(bottomView) - getDecoratedTop(topView);
+		return viewSpan <= getHeight();
+	}
+	
+	private int calculateDeltaWhenScrollDown(int dy, View topView){
+		if (isViewTheFirst(topView)){
+			int viewTop = getDecoratedTop(topView);
+			return Math.max(viewTop, dy);
+		} else {
+			return dy;
+		}
+	}
+	
+	private boolean isViewTheFirst(View v){
+		return getPosition(v) == 0;
+	}
+	
+	private int calculateDeltaWhenScrollUp(int dy, View bottomView, int itemCount){
+		if(isViewTheLast(bottomView, itemCount)) {
+			int viewBottom = getDecoratedBottom(bottomView);
+			int parentBottom = getHeight();
+			int delta = Math.min(viewBottom - parentBottom, dy);
+			return delta;
+		}
+		return dy;
+	}
+	
+	private boolean isViewTheLast(View v, int itemCount){
+		int adapterPos = getPosition(v);
+		return adapterPos == itemCount -1;
+	}
 
     @Override
     public boolean canScrollVertically() {
