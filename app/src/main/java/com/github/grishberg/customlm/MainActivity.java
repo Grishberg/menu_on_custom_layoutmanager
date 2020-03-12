@@ -16,6 +16,7 @@ import com.github.grishberg.customlm.rv.MenuRecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
+import com.github.grishberg.customlm.menu.*;
 
 public class MainActivity extends Activity implements OnStartDragListener {
     private ItemTouchHelper itemTouchHelper;
@@ -29,14 +30,19 @@ public class MainActivity extends Activity implements OnStartDragListener {
 
         MenuRecyclerView rv = findViewById(R.id.rv);
         rv.setSizeChangeListener(dimension);
-
+		
+		MenuState menuState = new MenuState();
+		
+		MenuItemsDecorator decorator = new MenuItemsDecorator(menuState, dimension);
+        rv.addItemDecoration(decorator);
+		
         int menuItemWidth = getResources().getDimensionPixelSize(R.dimen.menuItemWidth);
-        CustomLayoutManager lm = new CustomLayoutManager(menuItemWidth);
+        CustomLayoutManager lm = new CustomLayoutManager(menuState, menuItemWidth);
         lm.setButtonsCount(4);
 
         MenuAdapter adapter = new MenuAdapter(LayoutInflater.from(this), this);
 
-        ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(adapter, lm);
+        ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(adapter, menuState);
         itemTouchHelper = new ItemTouchHelper(callback);
         itemTouchHelper.attachToRecyclerView(rv);
 
@@ -44,8 +50,7 @@ public class MainActivity extends Activity implements OnStartDragListener {
         rv.setLayoutManager(lm);
         adapter.updateItems(createItems());
 
-        MenuItemsDecorator decorator = new MenuItemsDecorator(dimension);
-        rv.addItemDecoration(decorator);
+        
     }
 
     private List<String> createItems() {

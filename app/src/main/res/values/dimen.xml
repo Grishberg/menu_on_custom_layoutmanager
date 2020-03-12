@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<dimen name="barHeight">100dp</dimen>
+	<dimen name="barHeight">70dp</dimen>
 	<dimen name="widgetHeight">150dp</dimen>
 	<dimen name="menuItemWidth">50dp</dimen>
 	<dimen name="menuItemHeight">50dp</dimen>
+	<dimen name="menuItemTitleHeight">20sp</dimen>
 	<dimen name="childWidth">200dp</dimen>
 	<dimen name="childHeight">150dp</dimen>
 </resources>

@@ -16,7 +16,10 @@ public class MenuDimension implements MenuRecyclerView.SizeChangedListener {
     }
 
     public int getBarSize() {
-        return ctx.getResources().getDimensionPixelSize(R.dimen.barHeight);
+		int menuItemHeight = ctx.getResources().getDimensionPixelSize(R.dimen.menuItemHeight);
+		int menuItemTitleHeight = ctx.getResources().getDimensionPixelSize(R.dimen.menuItemTitleHeight);
+        int barHeight = ctx.getResources().getDimensionPixelSize(R.dimen.barHeight);
+		return menuItemHeight + menuItemTitleHeight + barHeight;
     }
 
     public int getTopOffset() {

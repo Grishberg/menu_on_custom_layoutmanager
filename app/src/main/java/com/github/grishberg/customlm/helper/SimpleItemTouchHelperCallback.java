@@ -24,6 +24,7 @@ import android.util.Log;
 import com.github.grishberg.customlm.rv.AddressBarVH;
 import com.github.grishberg.customlm.rv.CustomLayoutManager;
 import com.github.grishberg.customlm.rv.MenuAdapter;
+import com.github.grishberg.customlm.menu.*;
 
 /**
  * An implementation of {@link ItemTouchHelper.Callback} that enables basic drag & drop and
@@ -40,11 +41,11 @@ public class SimpleItemTouchHelperCallback extends ItemTouchHelper.Callback {
     public static final float ALPHA_FULL = 1.0f;
 
     private final MenuAdapter adapter;
-    private final CustomLayoutManager layoutManager;
+    private final MenuState menuState;
 
-    public SimpleItemTouchHelperCallback(MenuAdapter adapter, CustomLayoutManager layoutManager) {
+    public SimpleItemTouchHelperCallback(MenuAdapter adapter, MenuState menuState) {
         this.adapter = adapter;
-        this.layoutManager = layoutManager;
+        this.menuState = menuState;
     }
 
     @Override
@@ -78,7 +79,7 @@ public class SimpleItemTouchHelperCallback extends ItemTouchHelper.Callback {
         int targetPos = target.getAdapterPosition();
         int sourcePos = source.getAdapterPosition();
 
-        layoutManager.onMoved(sourcePos, targetPos);
+        menuState.onMoved(sourcePos, targetPos);
         // Notify the adapter of the move
         adapter.onItemMove(sourcePos, targetPos);
         return true;

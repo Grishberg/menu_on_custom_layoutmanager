@@ -5,12 +5,18 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import com.github.grishberg.customlm.menu.MenuDimension;
+import com.github.grishberg.customlm.menu.*;
+import android.util.*;
 
 public class MenuItemsDecorator extends RecyclerView.ItemDecoration {
-    private final MenuDimension menuState;
+	private static final String TAG ="Decorator";
+	
+    private final MenuDimension menuDimension;
+	private final MenuState menuState;
 
-    public MenuItemsDecorator(MenuDimension menuState) {
-        this.menuState = menuState;
+    public MenuItemsDecorator(MenuState state, MenuDimension dimension) {
+        menuState = state;
+		menuDimension = dimension;
     }
 
     @Override
@@ -19,8 +25,10 @@ public class MenuItemsDecorator extends RecyclerView.ItemDecoration {
         int leftOffset = 4;
         int rightOffset = 4;
         int bottomOffset = 4;
-        if (parent.getChildAdapterPosition(view) == 0) {
-            topOffset = menuState.getTopOffset();
+		int itemPos = parent.getChildAdapterPosition(view);
+        if (menuState.isTopItem(parent.getChildAdapterPosition(view))) {
+			Log.d(TAG, "getItemOffset pos=" +itemPos +", isPreLayout"+state.isPreLayout());
+            topOffset = menuDimension.getTopOffset();
         }
         //We can supply forced insets for each item view here in the Rect
         outRect.set(leftOffset, topOffset, rightOffset, bottomOffset);

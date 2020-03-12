@@ -8,17 +8,17 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.github.grishberg.customlm.menu.MenuButtonsDelegate;
+import com.github.grishberg.customlm.menu.*;
 
-public class CustomLayoutManager extends RecyclerView.LayoutManager implements MenuButtonsDelegate {
+public class CustomLayoutManager extends RecyclerView.LayoutManager {
     private static final String TAG = "CLM";
-    private int buttonsInRow = 3;
-    private int maxButtons = 6;
+    
     private int scrollOffset;
     private final LayoutDelegate delegate;
     private int buttonsCount;
 
-    public CustomLayoutManager(int itemWidth) {
-        delegate = new LayoutDelegate(this);
+    public CustomLayoutManager(MenuState menuState, int itemWidth) {
+        delegate = new LayoutDelegate(menuState, this, itemWidth);
     }
 
     public void setButtonsCount(int count) {
@@ -30,24 +30,6 @@ public class CustomLayoutManager extends RecyclerView.LayoutManager implements M
         return new CustomLayoutManager.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.MATCH_PARENT);
     }
 
-    public void onMoved(int srcPos, int dstPos) {
-        if (srcPos <= buttonsInRow && dstPos <= buttonsInRow) {
-            return;
-        }
-        if (srcPos <= buttonsInRow) {
-            buttonsInRow--;
-        }
-        if (dstPos <= buttonsInRow) {
-            buttonsInRow++;
-        }
-        if (buttonsInRow < 1) {
-            buttonsInRow = 1;
-        }
-        if (buttonsInRow > maxButtons) {
-            buttonsInRow = maxButtons;
-        }
-    }
-
     @Override
     public RecyclerView.LayoutParams generateLayoutParams(Context c, AttributeSet attrs) {
         return new LayoutParams(c, attrs);
@@ -57,17 +39,7 @@ public class CustomLayoutManager extends RecyclerView.LayoutManager implements M
     public RecyclerView.LayoutParams generateLayoutParams(ViewGroup.LayoutParams lp) {
         return super.generateLayoutParams(lp);
     }
-
-    @Override
-    public void incButtonsInRow() {
-        buttonsInRow++;
-    }
-
-    @Override
-    public void decButtonsInRow() {
-        buttonsInRow--;
-    }
-
+	
     @Override
     public void onLayoutChildren(RecyclerView.Recycler recycler, RecyclerView.State state) {
         Log.d(TAG, "onLayoutChildren");
@@ -90,14 +62,13 @@ public class CustomLayoutManager extends RecyclerView.LayoutManager implements M
     }
 
     private void fillDown(RecyclerView.Recycler recycler) {
-        int buttonInRowWidth = getWidth() / buttonsInRow;
 
         int pos = 0;
         boolean fillDown = true;
         int height = getHeight();
         int screenWidth = getWidth();
         int itemCount = getItemCount();
-        delegate.beforeLayout(scrollOffset, screenWidth, height, buttonsInRow, buttonsCount);
+        delegate.beforeLayout(scrollOffset, screenWidth, height, buttonsCount);
 
         while (fillDown && pos < itemCount) {
             View child = recycler.getViewForPosition(pos);
@@ -105,42 +76,10 @@ public class CustomLayoutManager extends RecyclerView.LayoutManager implements M
             CustomLayoutManager.LayoutParams lp = (LayoutParams) child.getLayoutParams();
 
             measureChildWithMargins(child, 0, 0);
-            final int viewHeight = calculateHeight(getDecoratedMeasuredHeight(child), lp);
-            final int viewWidth;
-
-            if (lp.isAddressBar) {
-                viewWidth = screenWidth;
-            } else if (isButtonsRow(pos)) {
-                viewWidth = buttonInRowWidth;
-            } else {
-                viewWidth = getDecoratedMeasuredWidth(child);
-            }
-
-            delegate.layoutChild(child, viewWidth, viewHeight);
+            delegate.layoutChild(child);
             // TODO: exit when thera are no visible items
             pos++;
         }
-    }
-
-    private boolean isButtonsRow(int pos) {
-        if (pos > 0 && pos <= buttonsInRow) {
-            return true;
-        }
-        return false;
-    }
-
-    private int calculateHeight(
-            int measuredHeight,
-            LayoutParams lp) {
-        if (lp.height == LayoutParams.WRAP_CONTENT ||
-                lp.height == LayoutParams.MATCH_PARENT
-        ) {
-            return measuredHeight;
-        }
-        if (lp.height < measuredHeight) {
-            return measuredHeight;
-        }
-        return lp.height;
     }
 
     @Override
