@@ -2,7 +2,8 @@
 <resources>
 	<dimen name="barHeight">70dp</dimen>
 	<dimen name="widgetHeight">150dp</dimen>
-	<dimen name="menuItemWidth">50dp</dimen>
+	<dimen name="menuIconWidth">50dp</dimen>
+	<dimen name="menuItemWidth">70dp</dimen>
 	<dimen name="menuItemHeight">50dp</dimen>
 	<dimen name="menuItemTitleHeight">20sp</dimen>
 	<dimen name="childWidth">200dp</dimen>

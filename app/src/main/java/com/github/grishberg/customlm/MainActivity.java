@@ -30,8 +30,9 @@ public class MainActivity extends Activity implements OnStartDragListener {
 
         MenuRecyclerView rv = findViewById(R.id.rv);
         rv.setSizeChangeListener(dimension);
-		
-		MenuState menuState = new MenuState();
+
+        MenuAdapter adapter = new MenuAdapter(LayoutInflater.from(this), this);
+		MenuState menuState = new MenuState(adapter);
 		
 		MenuItemsDecorator decorator = new MenuItemsDecorator(menuState, dimension);
         rv.addItemDecoration(decorator);
@@ -40,7 +41,7 @@ public class MainActivity extends Activity implements OnStartDragListener {
         CustomLayoutManager lm = new CustomLayoutManager(menuState, menuItemWidth);
         lm.setButtonsCount(4);
 
-        MenuAdapter adapter = new MenuAdapter(LayoutInflater.from(this), this);
+
 
         ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(adapter, menuState);
         itemTouchHelper = new ItemTouchHelper(callback);

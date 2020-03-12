@@ -5,7 +5,7 @@
     android:orientation="vertical">
 
     <FrameLayout
-        android:layout_width="@dimen/menuItemWidth"
+        android:layout_width="@dimen/menuIconWidth"
         android:layout_height="@dimen/menuItemHeight"
         android:layout_gravity="center"
         android:background="@drawable/shape_oval">

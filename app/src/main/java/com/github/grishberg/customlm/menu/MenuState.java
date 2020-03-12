@@ -1,15 +1,19 @@
 package com.github.grishberg.customlm.menu;
-import com.github.grishberg.customlm.rv.*;
 
-public class MenuState
-{
-	private int barButtonsCount = 2;
-	private int maxButtons = 6;
+import com.github.grishberg.customlm.rv.MenuAdapter;
 
-	public MenuState() {
-	}
-	
-	public void onMoved(int srcPos, int dstPos) {
+public class MenuState {
+    private static final int SINGLE_ROW_MODE_BTN_COUNT = 2;
+    private final MenuAdapter adapter;
+    private int barButtonsCount = 2;
+    private int maxButtons = 6;
+    private boolean isTwoRowMode = barButtonsCount > SINGLE_ROW_MODE_BTN_COUNT;
+
+    public MenuState(MenuAdapter adapter) {
+        this.adapter = adapter;
+    }
+
+    public void onMoved(int srcPos, int dstPos) {
         if (srcPos <= barButtonsCount && dstPos <= barButtonsCount) {
             return;
         }
@@ -25,21 +29,42 @@ public class MenuState
         if (barButtonsCount > maxButtons) {
             barButtonsCount = maxButtons;
         }
+
+        boolean newTwoRowModeState = isTwoRowMode();
+        if (newTwoRowModeState == isTwoRowMode) {
+            return;
+        }
+
+        if (newTwoRowModeState) {
+            onTwoRowModeEnabled();
+        } else {
+            onSingleRowModeEnabled();
+        }
     }
-	
-	public int getDynamicButtonsCount() {
-		return barButtonsCount;
-	}
-	
-	public boolean isTopItem(int pos){
-		if(isTwoRowMode()){
-			return pos == 0;
-		}
-		
-		return pos <= barButtonsCount;
-	}
-	
-	public boolean isTwoRowMode() {
-		return barButtonsCount > 2;
-	}
+
+    private void onTwoRowModeEnabled() {
+        isTwoRowMode = true;
+        adapter.notifyItemRangeChanged(0, SINGLE_ROW_MODE_BTN_COUNT + 2);
+    }
+
+    private void onSingleRowModeEnabled() {
+        isTwoRowMode = false;
+        adapter.notifyItemRangeChanged(0, SINGLE_ROW_MODE_BTN_COUNT + 1);
+    }
+
+    public int getDynamicButtonsCount() {
+        return barButtonsCount;
+    }
+
+    public boolean isTopItem(int pos) {
+        if (isTwoRowMode()) {
+            return pos == 0;
+        }
+
+        return pos <= barButtonsCount;
+    }
+
+    public boolean isTwoRowMode() {
+        return barButtonsCount > SINGLE_ROW_MODE_BTN_COUNT;
+    }
 }

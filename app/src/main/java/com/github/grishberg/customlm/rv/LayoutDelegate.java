@@ -1,17 +1,18 @@
 package com.github.grishberg.customlm.rv;
 
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
-import android.util.*;
-import com.github.grishberg.customlm.menu.*;
+
+import com.github.grishberg.customlm.menu.MenuState;
 
 public class LayoutDelegate {
-	private static final String TAG = "LD";
-	
+    private static final String TAG = "LD";
+
     private final RecyclerView.LayoutManager lm;
-	private final MenuState menuState;
+    private final MenuState menuState;
     private final AddressBarState addressBar = new AddressBarState();
-	private final AddressBarAndItemsState addressBarAndItems = new AddressBarAndItemsState();
+    private final AddressBarAndItemsState addressBarAndItems = new AddressBarAndItemsState();
     private final ButtonsRowState buttonsRow = new ButtonsRowState();
     private final MenuItemsState menuItems = new MenuItemsState();
     private State state = addressBar;
@@ -20,12 +21,12 @@ public class LayoutDelegate {
     private int viewLeft;
     private int viewTop;
     private int buttonsInRowCount;
-	private final int minItemWidth;
+    private final int minItemWidth;
 
     LayoutDelegate(MenuState menuState, RecyclerView.LayoutManager lm, int minItemWidth) {
-		this.menuState = menuState;
+        this.menuState = menuState;
         this.lm = lm;
-		this.minItemWidth = minItemWidth;
+        this.minItemWidth = minItemWidth;
     }
 
     void beforeLayout(int offset, int w, int h,
@@ -36,7 +37,7 @@ public class LayoutDelegate {
         screenHeight = h;
         this.buttonsInRowCount = buttonsInRowCount;
         nextState(addressBar);
-		Log.d(TAG, "beforeLayout viewTop ="+viewTop);
+        Log.d(TAG, "beforeLayout viewTop =" + viewTop);
     }
 
     void layoutChild(View child) {
@@ -50,8 +51,8 @@ public class LayoutDelegate {
                 viewLeft + w,
                 viewTop + h
         );
-		Log.d(TAG, "layout l="+viewLeft +", t="+viewTop+
-				", w="+w+", h="+h);
+        Log.d(TAG, "layout l=" + viewLeft + ", t=" + viewTop +
+                ", w=" + w + ", h=" + h);
     }
 
     private void nextState(State nextState) {
@@ -64,51 +65,52 @@ public class LayoutDelegate {
         @Override
         public void activateState() {
             viewLeft = 0;
-			if (!menuState.isTwoRowMode()){
-				nextState(addressBarAndItems);
-			}
+            if (!menuState.isTwoRowMode()) {
+                nextState(addressBarAndItems);
+            }
         }
 
         @Override
         public void layoutChild(View child) {
-			int w = screenWidth;
-			int h = lm.getDecoratedMeasuredHeight(child);
+            int w = screenWidth;
+            int h = lm.getDecoratedMeasuredHeight(child);
             layout(child, w, h);
             viewTop += h;
             nextState(buttonsRow);
         }
     }
-	
-	private class AddressBarAndItemsState implements State {
-		private int addressBarWidth;
-		private int itemIndex;
-		private int barHeight;
-		
+
+    private class AddressBarAndItemsState implements State {
+        private int addressBarWidth;
+        private int itemIndex;
+        private int barHeight;
+
         @Override
         public void activateState() {
-			itemIndex = 0;
+            itemIndex = 0;
             viewLeft = 0;
-			addressBarWidth = screenWidth - menuState.getDynamicButtonsCount() * minItemWidth;
-			Log.d(TAG, "activate ab&items top="+viewTop);
+            addressBarWidth = screenWidth - menuState.getDynamicButtonsCount() * minItemWidth;
+            Log.d(TAG, "activate ab&items top=" + viewTop);
         }
 
         @Override
         public void layoutChild(View child) {
-			int h = lm.getDecoratedMeasuredHeight(child);
-			if(itemIndex == 0) {
-				layout(child, addressBarWidth, h);
-				viewLeft += addressBarWidth;
-				barHeight = h;
-			} else {
-            	layout(child, minItemWidth, barHeight);
-				viewLeft += minItemWidth;
-			}
-			
-			itemIndex ++;
-			if(itemIndex == menuState.getDynamicButtonsCount() + 1) {
-				nextState(menuItems);
-				viewTop += barHeight;
-			}
+            int h = lm.getDecoratedMeasuredHeight(child);
+            Log.d(TAG, "layoutChild: measured h=" + h);
+            if (itemIndex == 0) {
+                layout(child, addressBarWidth, h);
+                viewLeft += addressBarWidth;
+                barHeight = h;
+            } else {
+                layout(child, minItemWidth, barHeight);
+                viewLeft += minItemWidth;
+            }
+
+            itemIndex++;
+            if (itemIndex == menuState.getDynamicButtonsCount() + 1) {
+                nextState(menuItems);
+                viewTop += barHeight;
+            }
         }
     }
 
@@ -125,7 +127,7 @@ public class LayoutDelegate {
 
         @Override
         public void layoutChild(View child) {
-			int h = lm.getDecoratedMeasuredHeight(child);
+            int h = lm.getDecoratedMeasuredHeight(child);
             layout(child, itemWidth, h);
             viewLeft += itemWidth;
 
@@ -150,7 +152,7 @@ public class LayoutDelegate {
 
         @Override
         public void layoutChild(View child) {
-			int h = lm.getDecoratedMeasuredHeight(child);
+            int h = lm.getDecoratedMeasuredHeight(child);
             layout(child, itemWidth, h);
             viewLeft += itemWidth;
 
