@@ -26,13 +26,14 @@ public class MainActivity extends Activity implements OnStartDragListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
-        MenuDimension dimension = new MenuDimension(this);
-
+        
         MenuRecyclerView rv = findViewById(R.id.rv);
-        rv.setSizeChangeListener(dimension);
-
+        
         MenuAdapter adapter = new MenuAdapter(LayoutInflater.from(this), this);
 		MenuState menuState = new MenuState(adapter);
+		
+		MenuDimension dimension = new MenuDimension(this, menuState);
+		rv.setSizeChangeListener(dimension);
 		
 		MenuItemsDecorator decorator = new MenuItemsDecorator(menuState, dimension);
         rv.addItemDecoration(decorator);
