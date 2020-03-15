@@ -42,27 +42,29 @@ public class CustomLayoutManager extends RecyclerView.LayoutManager {
 	
     @Override
     public void onLayoutChildren(RecyclerView.Recycler recycler, RecyclerView.State state) {
-        Log.d(TAG, "onLayoutChildren");
+        Log.d(TAG, "====== onLayoutChildren: iPreLayout="+state.isPreLayout());
         if (state.isPreLayout()) {
-            Log.d(TAG, "is prelayout");
             for (int i = 0; i < getChildCount(); i++) {
                 final View view = getChildAt(i);
                 LayoutParams lp = (LayoutParams) view.getLayoutParams();
 
                 if (lp.isItemRemoved()) {
-                    Log.d(TAG, "item removed " + i);
+                    Log.d(TAG, "    item removed " + i);
                     //Track these view removals as visible
                     //removedCache.put(lp.getViewLayoutPosition(), REMOVE_VISIBLE);
                 }
+				
+				if(lp.isItemChanged()){
+					Log.d(TAG, "    item changed " + i);
+				}
             }
         }
         //Clear all attached views into the recycle bin
         detachAndScrapAttachedViews(recycler);
-        fillDown(recycler);
+        fillDown(recycler, state);
     }
 
-    private void fillDown(RecyclerView.Recycler recycler) {
-
+    private void fillDown(RecyclerView.Recycler recycler, RecyclerView.State state) {
         int pos = 0;
         boolean fillDown = true;
         int height = getHeight();
@@ -76,7 +78,7 @@ public class CustomLayoutManager extends RecyclerView.LayoutManager {
             CustomLayoutManager.LayoutParams lp = (LayoutParams) child.getLayoutParams();
 
             measureChildWithMargins(child, 0, 0);
-            delegate.layoutChild(child);
+            delegate.layoutChild(child, state.isPreLayout());
             // TODO: exit when thera are no visible items
             pos++;
         }

@@ -37,11 +37,11 @@ public class LayoutDelegate {
         screenHeight = h;
         this.buttonsInRowCount = buttonsInRowCount;
         nextState(addressBar);
-        Log.d(TAG, "beforeLayout viewTop =" + viewTop);
+        Log.d(TAG, "|    beforeLayout viewTop =" + viewTop);
     }
 
-    void layoutChild(View child) {
-        state.layoutChild(child);
+    void layoutChild(View child, boolean isPrePayout) {
+        state.layoutChild(child, isPrePayout);
     }
 
     private void layout(View child, int w, int h) {
@@ -51,7 +51,7 @@ public class LayoutDelegate {
                 viewLeft + w,
                 viewTop + h
         );
-        Log.d(TAG, "layout l=" + viewLeft + ", t=" + viewTop +
+        Log.d(TAG, "|    layout l=" + viewLeft + ", t=" + viewTop +
                 ", w=" + w + ", h=" + h);
     }
 
@@ -71,7 +71,7 @@ public class LayoutDelegate {
         }
 
         @Override
-        public void layoutChild(View child) {
+        public void layoutChild(View child, boolean isPreLayout) {
             int w = screenWidth;
             int h = lm.getDecoratedMeasuredHeight(child);
             layout(child, w, h);
@@ -90,13 +90,14 @@ public class LayoutDelegate {
             itemIndex = 0;
             viewLeft = 0;
             addressBarWidth = screenWidth - menuState.getDynamicButtonsCount() * minItemWidth;
-            Log.d(TAG, "activate ab&items top=" + viewTop);
+            Log.d(TAG, "    activate ab&items top=" + viewTop);
         }
 
         @Override
-        public void layoutChild(View child) {
+        public void layoutChild(View child, boolean isPreLayout) {
             int h = lm.getDecoratedMeasuredHeight(child);
-            Log.d(TAG, "layoutChild: measured h=" + h);
+            Log.d(TAG, "|    layoutChild: isPreLayout = "+ isPreLayout +
+						", measured h=" + h);
             if (itemIndex == 0) {
                 layout(child, addressBarWidth, h);
                 viewLeft += addressBarWidth;
@@ -126,7 +127,7 @@ public class LayoutDelegate {
         }
 
         @Override
-        public void layoutChild(View child) {
+        public void layoutChild(View child, boolean isPreLayout) {
             int h = lm.getDecoratedMeasuredHeight(child);
             layout(child, itemWidth, h);
             viewLeft += itemWidth;
@@ -151,7 +152,7 @@ public class LayoutDelegate {
         }
 
         @Override
-        public void layoutChild(View child) {
+        public void layoutChild(View child, boolean isPreLayout) {
             int h = lm.getDecoratedMeasuredHeight(child);
             layout(child, itemWidth, h);
             viewLeft += itemWidth;
@@ -166,7 +167,7 @@ public class LayoutDelegate {
     }
 
     private interface State {
-        void layoutChild(View child);
+        void layoutChild(View child, boolean isPreLayout);
 
         void activateState();
     }

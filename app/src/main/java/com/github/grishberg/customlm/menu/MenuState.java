@@ -1,9 +1,13 @@
 package com.github.grishberg.customlm.menu;
 
 import com.github.grishberg.customlm.rv.MenuAdapter;
+import android.util.*;
 
 public class MenuState {
+	private static final String TAG = MenuState.class.getSimpleName();
+	
     private static final int SINGLE_ROW_MODE_BTN_COUNT = 2;
+	
     private final MenuAdapter adapter;
     private int barButtonsCount = 2;
     private int maxButtons = 6;
@@ -43,13 +47,15 @@ public class MenuState {
     }
 
     private void onTwoRowModeEnabled() {
+		Log.d(TAG, "------ onTwoRowModeEnabled");
         isTwoRowMode = true;
-        adapter.notifyItemRangeChanged(0, SINGLE_ROW_MODE_BTN_COUNT + 2);
+        //adapter.notifyItemRangeChanged(0, SINGLE_ROW_MODE_BTN_COUNT + 2);
     }
 
     private void onSingleRowModeEnabled() {
+		Log.d(TAG, "------ onSingleRowModeEnabled");
         isTwoRowMode = false;
-        adapter.notifyItemRangeChanged(0, SINGLE_ROW_MODE_BTN_COUNT + 1);
+        //adapter.notifyItemRangeChanged(0, SINGLE_ROW_MODE_BTN_COUNT + 1);
     }
 
     public int getDynamicButtonsCount() {
