@@ -70,7 +70,7 @@ public class CustomLayoutManager extends RecyclerView.LayoutManager {
         int height = getHeight();
         int screenWidth = getWidth();
         int itemCount = getItemCount();
-        delegate.beforeLayout(scrollOffset, screenWidth, height, buttonsCount);
+        delegate.beforeLayout(scrollOffset, screenWidth, height, buttonsCount, state.isPreLayout());
 
         while (fillDown && pos < itemCount) {
             View child = recycler.getViewForPosition(pos);

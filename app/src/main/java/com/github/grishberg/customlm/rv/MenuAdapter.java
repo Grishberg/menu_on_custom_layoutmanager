@@ -1,6 +1,5 @@
 package com.github.grishberg.customlm.rv;
 
-import android.support.v4.view.MotionEventCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -49,6 +48,7 @@ public class MenuAdapter extends RecyclerView.Adapter<BaseViewHolder> {
     @Override
     public void onBindViewHolder(BaseViewHolder vh, int pos) {
         CustomLayoutManager.LayoutParams lp = (CustomLayoutManager.LayoutParams) vh.itemView.getLayoutParams();
+        vh.itemView.setTag("pos=" + pos);
         if (getItemViewType(pos) == TYPE_ADDRESSBAR) {
             lp.setAddressBarState(true);
             return;

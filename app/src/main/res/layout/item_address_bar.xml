@@ -1,4 +1,4 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.github.grishberg.customlm.CustomLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="@dimen/barHeight"
 	android:background="#00ff00"
@@ -12,4 +12,4 @@
 		android:text="address bar"
 	/>
 
-</FrameLayout>
+</com.github.grishberg.customlm.CustomLinearLayout>

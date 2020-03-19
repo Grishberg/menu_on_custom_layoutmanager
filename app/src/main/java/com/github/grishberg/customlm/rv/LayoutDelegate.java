@@ -22,15 +22,18 @@ public class LayoutDelegate {
     private int viewTop;
     private int buttonsInRowCount;
     private final int minItemWidth;
+    private boolean prevTwoRowState;
 
     LayoutDelegate(MenuState menuState, RecyclerView.LayoutManager lm, int minItemWidth) {
         this.menuState = menuState;
         this.lm = lm;
         this.minItemWidth = minItemWidth;
+        prevTwoRowState = menuState.isTwoRowMode();
     }
 
     void beforeLayout(int offset, int w, int h,
-                      int buttonsInRowCount) {
+                      int buttonsInRowCount,
+                      boolean isPrePayout) {
         viewTop = offset;
         viewLeft = 0;
         screenWidth = w;
@@ -38,6 +41,9 @@ public class LayoutDelegate {
         this.buttonsInRowCount = buttonsInRowCount;
         nextState(addressBar);
         Log.d(TAG, "|    beforeLayout viewTop =" + viewTop);
+        if (!isPrePayout) {
+            prevTwoRowState = menuState.isTwoRowMode();
+        }
     }
 
     void layoutChild(View child, boolean isPrePayout) {
@@ -51,7 +57,7 @@ public class LayoutDelegate {
                 viewLeft + w,
                 viewTop + h
         );
-        Log.d(TAG, "|    layout l=" + viewLeft + ", t=" + viewTop +
+        Log.d(TAG, "|    layout " + child + ", l=" + viewLeft + ", t=" + viewTop +
                 ", w=" + w + ", h=" + h);
     }
 
@@ -64,8 +70,9 @@ public class LayoutDelegate {
 
         @Override
         public void activateState() {
+            Log.d(TAG, "    state=AddressBarState");
             viewLeft = 0;
-            if (!menuState.isTwoRowMode()) {
+            if (!prevTwoRowState) {
                 nextState(addressBarAndItems);
             }
         }
@@ -87,6 +94,7 @@ public class LayoutDelegate {
 
         @Override
         public void activateState() {
+            Log.d(TAG, "    state=AddressBarAndItemsState");
             itemIndex = 0;
             viewLeft = 0;
             addressBarWidth = screenWidth - menuState.getDynamicButtonsCount() * minItemWidth;
@@ -96,8 +104,6 @@ public class LayoutDelegate {
         @Override
         public void layoutChild(View child, boolean isPreLayout) {
             int h = lm.getDecoratedMeasuredHeight(child);
-            Log.d(TAG, "|    layoutChild: isPreLayout = "+ isPreLayout +
-						", measured h=" + h);
             if (itemIndex == 0) {
                 layout(child, addressBarWidth, h);
                 viewLeft += addressBarWidth;
@@ -121,6 +127,7 @@ public class LayoutDelegate {
 
         @Override
         public void activateState() {
+            Log.d(TAG, "    state=ButtonsRowState");
             itemIndex = 0;
             viewLeft = 0;
             itemWidth = screenWidth / menuState.getDynamicButtonsCount();
@@ -146,6 +153,8 @@ public class LayoutDelegate {
 
         @Override
         public void activateState() {
+            Log.d(TAG, "    state=MenuItemsState");
+
             viewLeft = 0;
             itemIndex = 0;
             itemWidth = screenWidth / buttonsInRowCount;
